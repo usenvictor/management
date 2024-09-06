@@ -1,35 +1,47 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserDto } from 'src/dto/create-user.dto';
-import { updateUserDto } from 'src/dto/update-user.dto';
-
-@Controller('user')
-export class UserController {
+/* eslint-disable prettier/prettier */
+import {
+    Controller,
+    Get,
+    Post,
+    Body,  
+    Req,
+    Res,
+    UseGuards,
+  } from '@nestjs/common';
+  import { UserService } from './user.service';
+  import { CreateUserDto } from 'src/dto/create-user.dto';
+  // import { UpdateUserDto } from './dto/update-user.dto';
+  import { loginDto } from 'src/dto/login.dto';
+  import { Request, Response } from 'express'; // Add this line
+  import { AuthGuard } from '@nestjs/passport';
+  import { RoleGuard } from 'src/guard/role.guard';
+  import { Roles } from 'src/guard/role';
+  
+  @Controller('user')
+  export class UserController {
     constructor(private readonly userService: UserService) {}
-
-    @Post()
-    create(@Body() CreateUserDto: CreateUserDto) {
-        return this.userService.create(CreateUserDto);
+  
+    @Post('signup')
+    create(@Body() createUserDto: CreateUserDto) {
+      return this.userService.create(createUserDto);
     }
-
-
-    @Get()
-    findAll() {
-        return this.userService.findAll();
+  
+    @Post('/login')
+    login(@Body() payload: loginDto, @Req() req: Request, @Res() res: Response){ // Update this line
+      return this.userService.signIn(payload, req, res);
     }
-
-    @Get(':id')
-    findOne(@Param('id') id: string){
-        return this.userService.findOne(+id);
+  
+    @Post('/logout')
+    logout(@Req()req: Request, @Res()res: Response){
+      return this.userService.logout(req, res)
     }
-
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateUserDto: updateUserDto){
-        return this.userService.update(+id, updateUserDto);
+    @Get('/get')
+    @UseGuards(AuthGuard(), RoleGuard)
+    @Roles(`admin`)
+    findAll(){
+      return this.userService.findAll()
     }
-
-    @Delete(':id')
-    remove(@Param('id') id: string){
-        return this.userService.remove(+id);
-    }
-}
+  
+    
+  }
+  

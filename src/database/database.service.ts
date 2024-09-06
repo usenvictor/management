@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDatabaseDto } from './dto/create-database.dto';
-import { UpdateDatabaseDto } from './dto/update-database.dto';
-
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { UpdateUserDto } from 'src/dto/update-user.dto';
 @Injectable()
 export class DatabaseService {
-  create(createDatabaseDto: CreateDatabaseDto) {
+  create(createDatabaseDto: CreateUserDto) {
     return 'This action adds a new database';
   }
 
@@ -16,7 +15,7 @@ export class DatabaseService {
     return `This action returns a #${id} database`;
   }
 
-  update(id: number, updateDatabaseDto: UpdateDatabaseDto) {
+  update(id: number, updateDatabaseDto: UpdateUserDto) {
     return `This action updates a #${id} database`;
   }
 

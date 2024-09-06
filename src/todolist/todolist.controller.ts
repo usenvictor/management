@@ -1,15 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { TodolistService } from './todolist.service';
 import { CreateTodolistDto } from './dto/create-todolist.dto';
 import { UpdateTodolistDto } from './dto/update-todolist.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RoleGuard } from 'src/guard/role.guard';
+import { Role } from 'src/entities/enum/role.enum';
+import { Roles } from 'src/guard/role';
+import { user } from 'src/entities/user.entity';
+import { Request } from 'express';
 
-@Controller('todolist')
+@Controller('todo')
 export class TodolistController {
   constructor(private readonly todolistService: TodolistService) {}
 
   @Post()
-  create(@Body() createTodolistDto: CreateTodolistDto) {
-    return this.todolistService.create(createTodolistDto);
+  @UseGuards(AuthGuard(),RoleGuard)
+  @Roles('user', 'admin')
+  create(@Body() createTodolistDto: CreateTodolistDto, @Req()req:Request) {
+    return this.todolistService.create(createTodolistDto, req.user as user);
   }
 
   @Get()
